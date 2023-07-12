@@ -2,11 +2,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from src.helpers import *
 from src.config import config
+import os
 
-app = Flask(__name__)
-
+app = Flask("book_status_api")
 # Load config to app
-app.config.from_pyfile("./config/config.py")
+app.config.from_pyfile("src/config/config.py")
 
 db = SQLAlchemy(app, session_options={"autocommit": True, "autoflush": False})
 
@@ -26,6 +26,3 @@ def error_405(error):
 @app.errorhandler(500)
 def error_500(error):
   return errorit("The server encountered an internal error and was unable to complete your request.", "INTERNAL_SERVER_ERROR", 500)
-
-if __name__ == '__main__':
-    app.run()
