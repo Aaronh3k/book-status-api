@@ -3,18 +3,38 @@ from flask import Response
 from src.config.config import *
 
 def responsify(payload, links={}, http_code=200, mimetype="application/json"):
-  if payload is not None and links:
+  """
+  An utility for returning reponse of an api call
+
+  :param  payload: [dictionary] e.g. {"name": "john"}
+  :param  links: [dictionary] e.g. {"movie_url": "http://sdsd.com/232/movie.html"}
+  :param  http_code: [integer]
+  :param  mimetype: [string]
+
+  :return [Object] Response object
+  """
+  if links:
+    payload = payload or {}  # If payload is None, initialize it as an empty dict
     payload["links"] = links
 
-  data = ujson.dumps(payload) if payload is not None else None
+  data = ujson.dumps(payload) if payload else None
 
-  return Response(
-    response=data,
-    status=http_code,
-    mimetype=mimetype
-  )
+  return Response(response=data, status=http_code, mimetype=mimetype)
+  
   
 def errorit(msg, custom_code, http_code=400, info="", mimetype="application/json", debug_info=None, **kwargs):
+  """
+  An utility for returning error reponse of an api call
+
+  :param  msg: [string or array] e.g. "user not found"
+  :param  custom_code: [string] e.g. USER_NOT_FOUND
+  :param  http_code: [integer]
+  :param  info: [string] e.g. For more info visit xyz.com/eww
+  :param  mimetype: [integer]
+  :param  debug_info: [dictionary] - any data to be returned
+  :param kwargs: [dictionary] - custom data
+  :return [Object] Response object
+  """
   return Response(
     response=err_dict(msg, custom_code, ( "{}{}".format(API_URI, info) if info else ""), debug_info, **kwargs),
     status=http_code,
@@ -22,6 +42,16 @@ def errorit(msg, custom_code, http_code=400, info="", mimetype="application/json
   )
 
 def err_dict(msg, code, info="", debug_info=None, **kwargs):
+  """
+  An utility for building error json
+
+  :param  msg: [array] e.g. "user not found"
+  :param  code: [string] e.g. USER_NOT_FOUND
+  :param  info: [string] e.g. For more info visit xyz.com/eww
+  :param  debug_info: [dictionary] - any data to be returned
+
+  :return [String] json
+  """  
   if not isinstance(msg, list): # convert message to an array, if it is not
     msg = [msg]
 
@@ -41,3 +71,25 @@ def err_dict(msg, code, info="", debug_info=None, **kwargs):
   dc["service"] = SERVICE_ID
 
   return ujson.dumps(dc)
+
+def list_diff(l1, l2):
+  """
+  Find differnce between two lists
+  """
+  return [i for i in l1 + l2 if i not in l1 or i not in l2]
+
+def datetime_to_str(dt, with_time=False, no_day=False):
+  """
+  Convert datetime to string YY-MM-DD format
+
+  :param  d: [object] - datetiem object
+
+  :return [string] - YYYY-MM-DD string
+  """
+  try:
+    if no_day:
+      return dt.strftime("%Y-%m") if not with_time else dt.strftime("%Y-%mT%H:%M:%SZ")
+    else:
+      return dt.strftime("%Y-%m-%d") if not with_time else dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+  except:
+    return None

@@ -8,7 +8,10 @@ app = Flask("book_status_api")
 # Load config to app
 app.config.from_pyfile("src/config/config.py")
 
-db = SQLAlchemy(app, session_options={"autocommit": True, "autoflush": False})
+db = SQLAlchemy(app)
+
+# wires up controller routes
+import src.controllers
 
 @app.route("/", methods=["GET", "OPTIONS"])
 def root_uri():
