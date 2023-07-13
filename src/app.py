@@ -7,6 +7,7 @@ import os
 app = Flask("book_status_api")
 # Load config to app
 app.config.from_pyfile("src/config/config.py")
+app.config['SQLALCHEMY_DATABASE_URI'] = config.DB_URI
 
 db = SQLAlchemy(app)
 
