@@ -119,7 +119,7 @@ class Book(BaseMixin, db.Model):
 
         :return [dict]
         """
-        book = Book.query.get(book_id)
+        book = db.session.get(Book, book_id) 
         if not book:
             return {}
 
@@ -143,7 +143,7 @@ class Book(BaseMixin, db.Model):
 
         :return [dict]
         """
-        book = Book.get_books(book_id, True)
+        book = db.session.get(Book, book_id) 
 
         if book:
           try:
