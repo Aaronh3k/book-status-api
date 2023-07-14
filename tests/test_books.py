@@ -65,6 +65,36 @@ class TestBookOperations(TestCase):
         response = self.app.test_client().delete(f"/v1/books/{book_id}")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.data)['action'], "deleted successfully")
+    
+    def test_create_invalid_book(self):
+        invalid_book = {
+            "ISBN": "9783161484100",
+            "title": "",
+            "author": "Some Author"
+        }
+        response = self.app.test_client().post(
+            "/v1/books",
+            data=json.dumps(invalid_book),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_non_existent_book(self):
+        updated_data = {"title": "Updated Title", "author": "Updated Author"}
+        response = self.app.test_client().patch(
+            "/v1/books/non_existent_book_id",
+            data=json.dumps(updated_data),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_non_existent_book(self):
+        response = self.app.test_client().delete("/v1/books/non_existent_book_id")
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_books(self):
+        response = self.app.test_client().get("/v1/books")
+        self.assertEqual(response.status_code, 200)
 
     def tearDown(self):
         with self.app_context:

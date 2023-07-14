@@ -125,7 +125,7 @@ class ReadingList(BaseMixin, db.Model):
 
         :return [dict]
         """
-        reading_list = ReadingList.query.get(list_id)
+        reading_list = db.session.get(ReadingList, list_id)
         if not reading_list:
             return {}
 

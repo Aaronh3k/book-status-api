@@ -15,6 +15,7 @@ def db(app, request):
 
     def teardown():
         with app.app_context():
+            _db.session.remove()
             _db.drop_all()
 
     request.addfinalizer(teardown)
