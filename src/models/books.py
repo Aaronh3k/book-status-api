@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.app import db
+from src.app import db, app
 import uuid
 from src.models.mixins import BaseMixin
 from src.helpers import *
@@ -34,31 +34,41 @@ class Book(BaseMixin, db.Model):
 
         :return [dict]
         """
+        app.logger.info('Preparing to create a new book')
+
         new_book = Book()
         allowed_columns = list_diff(Book().columns_list(), Book()._restrict_in_creation_)
 
         for column in allowed_columns:
-          if column in data:
-            setattr(new_book, column, data.get(column))
+            if column in data:
+                setattr(new_book, column, data.get(column))
+
+        app.logger.debug('Populated new book object with provided data')
 
         # Check if data is valid
-        result  = new_book.validate_and_sanitize(Book()._restrict_in_creation_)
+        result = new_book.validate_and_sanitize(Book()._restrict_in_creation_)
         if result.get("errors"):
-          return {"error": result["errors"]}
+            app.logger.error('Validation and sanitization failed for new book')
+            app.logger.debug(f'Error details: {result["errors"]}')
+            return {"error": result["errors"]}
 
         try:
-          db.session.add(new_book)
-          db.session.flush()
-          db.session.commit()
-          return {"book_id": str(new_book.book_id)}
+            db.session.add(new_book)
+            db.session.flush()
+            db.session.commit()
+            app.logger.info(f'New book created successfully with id {new_book.book_id}')
+            return {"book_id": str(new_book.book_id)}
         except exc.IntegrityError as e:
-          db.session.rollback()
-          err = e.orig.diag.message_detail.rsplit(',', 1)[-1]
-          return {"error": err.replace(")", "")}
+            db.session.rollback()
+            err = e.orig.diag.message_detail.rsplit(',', 1)[-1]
+            app.logger.error('Integrity error occurred while creating new book')
+            app.logger.debug(f'Error details: {err.replace(")", "")}')
+            return {"error": err.replace(")", "")}
         except Exception as e:
-          db.session.rollback()
-          return {"error": "failed to create book"}
-    
+            db.session.rollback()
+            app.logger.error('Unknown error occurred while creating new book')
+            app.logger.debug(f'Error details: {str(e)}')
+            return {"error": "failed to create book"}
     
     @staticmethod
     def get_books(book_id=None, return_as_object=False, page=None, offset=None, orderby=None, sortby=None):
@@ -76,6 +86,10 @@ class Book(BaseMixin, db.Model):
         page =  page or 1
         offset =  offset or 20
         begin_query = db.session.query(Book)
+
+        app.logger.info('Book retrieval request received')
+        app.logger.debug(f'Request parameters - book_id: {book_id}, return_as_object: {return_as_object}, page: {page}, offset: {offset}, orderby: {orderby}, sortby: {sortby}')
+
         try:
             if not book_id:
                 offset = int(offset)
@@ -91,6 +105,9 @@ class Book(BaseMixin, db.Model):
 
                 count = Book.query.count()
                 meta_data = {"book_count": count, "page_number": int(page) + 1, "page_offset": offset}
+
+                app.logger.info(f'Retrieved {count} books')
+
                 if result:
                     if return_as_object:
                         return result
@@ -101,13 +118,15 @@ class Book(BaseMixin, db.Model):
                 result = begin_query.filter(
                     Book.book_id == book_id
                     ).all()
+
                 if result:
+                    app.logger.info(f'Retrieved book with book_id {book_id}')
                     return result[0] if return_as_object else result[0].to_dict()
 
         except Exception as e:
-            print("ACTION=GETTING_BOOK_FAILED. error={}, book_id={}, page={}, offset={}".format(e, book_id, page, offset))
+            app.logger.error('Book retrieval failed')
+            app.logger.debug(f'Error details: {e}, book_id: {book_id}, page: {page}, offset: {offset}')
             return {"error" : "No book found"}
-    
     
     @staticmethod
     def update_a_book(book_id, data):
@@ -119,8 +138,13 @@ class Book(BaseMixin, db.Model):
 
         :return [dict]
         """
+        app.logger.info(f'Update book request received for book id: {book_id}')
+
+        app.logger.debug(f'Request data: {data}')
+    
         book = db.session.get(Book, book_id) 
         if not book:
+            app.logger.error(f'No book found with id: {book_id}')
             return {}
 
         try:
@@ -129,10 +153,12 @@ class Book(BaseMixin, db.Model):
                     setattr(book, column, data[column])
             book.updated_at = datetime.utcnow()
             db.session.commit()
+            app.logger.info('Book successfully updated')
             return {'message': 'successfully updated book_id={}'.format(book_id)}
         except Exception as e:
+            app.logger.error('Book update failed')
+            app.logger.debug(f'Error details: {str(e)}')
             return {"error": "failed to update book"}
-    
     
     @staticmethod
     def delete_book_permanently(book_id):
@@ -143,15 +169,21 @@ class Book(BaseMixin, db.Model):
 
         :return [dict]
         """
+        app.logger.info(f'Request to delete book with id {book_id} received')
+
         book = db.session.get(Book, book_id) 
 
         if book:
-          try:
-            db.session.delete(book)
-            db.session.commit()
-            return {"action": "deleted successfully"}
-          except Exception as e:
-            print(e)
-            return {"error": "Book deletion failed"}
+            try:
+                db.session.delete(book)
+                db.session.commit()
+                app.logger.info('Book successfully deleted')
+                return {"action": "deleted successfully"}
+            except Exception as e:
+                app.logger.error('Book deletion failed')
+                app.logger.debug(f'Error details: {e}')
+                return {"error": "Book deletion failed"}
         else:
-          return {}
+            app.logger.warning(f'Book with id {book_id} not found')
+            return {}
+

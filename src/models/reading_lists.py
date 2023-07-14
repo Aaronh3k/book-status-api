@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.app import db
+from src.app import db, app
 import uuid
 from src.models.mixins import BaseMixin
 from src.helpers import *
@@ -35,6 +35,9 @@ class ReadingList(BaseMixin, db.Model):
 
         :return [dict]
         """
+        app.logger.info('Create reading list request received')
+        app.logger.debug(f'Request data: {data}')
+        
         new_reading_list = ReadingList()
         allowed_columns = list_diff(ReadingList().columns_list(), ReadingList()._restrict_in_creation_)
 
@@ -45,21 +48,27 @@ class ReadingList(BaseMixin, db.Model):
         # Check if data is valid
         result  = new_reading_list.validate_and_sanitize(ReadingList()._restrict_in_creation_)
         if result.get("errors"):
+            app.logger.error('Reading list creation failed during validation')
+            app.logger.debug(f'Error details: {result["errors"]}')
             return {"error": result["errors"]}
 
         try:
             db.session.add(new_reading_list)
             db.session.flush()
             db.session.commit()
+            app.logger.info('Reading list successfully created')
             return {"list_id": str(new_reading_list.list_id)}
         except exc.IntegrityError as e:
             db.session.rollback()
             err = e.orig.diag.message_detail.rsplit(',', 1)[-1]
+            app.logger.error('Reading list creation failed due to Integrity Error')
+            app.logger.debug(f'Error details: {err.replace(")", "")}')
             return {"error": err.replace(")", "")}
         except Exception as e:
             db.session.rollback()
+            app.logger.error('Reading list creation failed due to Exception')
+            app.logger.debug(f'Error details: {str(e)}')
             return {"error": "failed to create reading list"}
-    
     
     @staticmethod
     def get_reading_lists(list_id=None, return_as_object=False, page=None, offset=None, orderby=None, sortby=None, status=None):
@@ -74,6 +83,9 @@ class ReadingList(BaseMixin, db.Model):
         :return [list]
         """
 
+        app.logger.info('Get reading list request received')
+        app.logger.debug(f'Request params: list_id={list_id}, return_as_object={return_as_object}, page={page}, offset={offset}, orderby={orderby}, sortby={sortby}, status={status}')
+        
         page =  page or 1
         offset =  offset or 20
         begin_query = db.session.query(ReadingList)
@@ -84,8 +96,7 @@ class ReadingList(BaseMixin, db.Model):
                 page = int(page)-1
                 
                 if status:
-                    begin_query = begin_query.filter(ReadingList.status == status
-                        )
+                    begin_query = begin_query.filter(ReadingList.status == status)
                 
                 if orderby and sortby:
                     if orderby == -1:
@@ -112,7 +123,8 @@ class ReadingList(BaseMixin, db.Model):
                     return result[0] if return_as_object else result[0].to_dict()
 
         except Exception as e:
-            print("ACTION=GETTING_READING_LIST_FAILED. error={}, list_id={}, page={}, offset={}".format(e, list_id, page, offset))
+            app.logger.error('Getting reading list failed')
+            app.logger.debug(f'Error details: {str(e)}, list_id={list_id}, page={page}, offset={offset}')
             return {"error" : "No reading list found"}
     
     @staticmethod
@@ -125,8 +137,12 @@ class ReadingList(BaseMixin, db.Model):
 
         :return [dict]
         """
+        app.logger.info(f'Update reading list request received for list_id: {list_id}')
+        app.logger.debug(f'Request data: {data}')
+
         reading_list = db.session.get(ReadingList, list_id)
         if not reading_list:
+            app.logger.error('Reading list not found')
             return {}
 
         try:
@@ -135,8 +151,12 @@ class ReadingList(BaseMixin, db.Model):
                     setattr(reading_list, column, data[column])
             reading_list.updated_at = datetime.utcnow()
             db.session.commit()
+            app.logger.info('Reading list successfully updated')
             return {'message': 'successfully updated list_id={}'.format(list_id)}
         except Exception as e:
+            db.session.rollback()
+            app.logger.error('Reading list update failed due to Exception')
+            app.logger.debug(f'Error details: {str(e)}')
             return {"error": "failed to update reading list"}
     
     @staticmethod
@@ -148,16 +168,21 @@ class ReadingList(BaseMixin, db.Model):
 
         :return [dict]
         """
+        app.logger.info(f'Delete reading list request received for list_id: {list_id}')
+
         reading_list = ReadingList.get_reading_lists(list_id, True)
 
         if reading_list:
             try:
                 db.session.delete(reading_list)
                 db.session.commit()
+                app.logger.info('Reading list successfully deleted')
                 return {"action": "deleted successfully"}
             except Exception as e:
+                db.session.rollback()
+                app.logger.error('Reading list deletion failed')
+                app.logger.debug(f'Error details: {str(e)}')
                 return {"error": "Reading list deletion failed"}
         else:
+            app.logger.warning(f'No reading list found with list_id: {list_id}')
             return {}
-
-
