@@ -1,0 +1,436 @@
+openapi: 3.0.1
+info:
+  title: Book Status API
+  description: REST API documentation for Book Status Service.
+  version: 0.0.1
+servers:
+  - url: /
+paths:
+  /books:
+    get:
+      tags:
+        - Books
+      summary: Get all books
+      operationId: getBooks
+      parameters:
+        - name: page_number
+          in: query
+          schema:
+            type: integer
+        - name: page_offset
+          in: query
+          schema:
+            type: integer
+        - name: orderby
+          in: query
+          schema:
+            type: integer
+        - name: sortby
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllBooks"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No books found
+          content: {}
+    post:
+      tags:
+        - Books
+      summary: Create a new book
+      operationId: createBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBook"
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookId"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /books/{book_id}:
+    get:
+      tags:
+        - Books
+      summary: Get a book
+      operationId: getBook
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        404:
+          description: No such book found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - Books
+      summary: Update a book
+      operationId: updateBook
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateBook"
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookId"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No such book found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - Books
+      summary: Delete a book permanently
+      operationId: deleteBook
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookId"
+        400:
+          description: Book deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No such book found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /reading_lists:
+    get:
+      tags:
+        - Reading Lists
+      summary: Get many reading lists' information
+      operationId: getReadingLists
+      parameters:
+        - name: page_number
+          in: query
+          schema:
+            type: integer
+        - name: page_offset
+          in: query
+          schema:
+            type: integer
+        - name: orderby
+          in: query
+          schema:
+            type: integer
+        - name: sortby
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [unread, in_progress, finished]
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingLists"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - Reading Lists
+      summary: Create a new reading list
+      operationId: createReadingList
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReadingList"
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingListId"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /reading_lists/{list_id}:
+    get:
+      tags:
+        - Reading Lists
+      summary: Get a reading list
+      operationId: getReadingList
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingList"
+        404:
+          description: No such reading list found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      tags:
+        - Reading Lists
+      summary: Update a reading list
+      operationId: updateReadingList
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateReadingList"
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingListId"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No such reading list found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      tags:
+        - Reading Lists
+      summary: Delete a reading list permanently
+      operationId: deleteReadingList
+      parameters:
+        - name: list_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingListId"
+        400:
+          description: Reading list deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No such reading list found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    AllBooks:
+      type: object
+      properties:
+        books:
+          type: array
+          items:
+            $ref: "#/components/schemas/Book"
+    Book:
+      type: object
+      properties:
+        book_id:
+          type: string
+        ISBN:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CreateBook:
+      type: object
+      properties:
+        ISBN:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+    UpdateBook:
+      type: object
+      properties:
+        ISBN:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+    BookId:
+      type: object
+      properties:
+        book_id:
+          type: string
+    Error:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+        code:
+          type: string
+        service:
+          type: string
+
+    ReadingLists:
+      type: object
+      properties:
+        reading_lists:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReadingList"
+        reading_list_count:
+          type: integer
+        page_number:
+          type: integer
+        page_offset:
+          type: integer
+    ReadingList:
+      type: object
+      properties:
+        list_id:
+          type: string
+        book_id:
+          type: string
+        status:
+          type: string
+          enum: [unread, in_progress, finished]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CreateReadingList:
+      type: object
+      properties:
+        book_id:
+          type: string
+        status:
+          type: string
+          enum: [unread, in_progress, finished]
+      required:
+        - book_id
+        - status
+    UpdateReadingList:
+      type: object
+      properties:
+        book_id:
+          type: string
+        status:
+          type: string
+          enum: [unread, in_progress, finished]
+      required:
+        - status
+    ReadingListId:
+      type: object
+      properties:
+        list_id:
+          type: string
