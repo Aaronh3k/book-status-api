@@ -1,4 +1,4 @@
-name: Python application test
+name: Book Service CI/CD
 
 on:
   push:
@@ -22,3 +22,16 @@ jobs:
         run: |
           export APP_ENVIRONMENT=test
           pytest
+      - name: Create Deployment Package
+        run: |
+          zip -r deployment_package.zip . -x '*.git*' -x '*__pycache__*' -x '*tests*'
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v14
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          application_name: Book-Service-REST-API
+          environment_name: Book-Service-REST-API-env
+          version_label: ${{ github.run_id }}
+          region: us-east-1
+          deployment_package: deployment_package.zip
