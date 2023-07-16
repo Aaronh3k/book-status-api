@@ -27,6 +27,8 @@ class BookRating(BaseMixin, db.Model):
     _restrict_in_creation_  = ["rating_id", "created_at", "updated_at"]
     _restrict_in_update_    = ["rating_id", "created_at", "book_id", "list_id"]
 
+    __table_args__ = (db.UniqueConstraint('book_id', 'list_id', name='uq_book_list'),)
+
     @staticmethod
     def create_a_rating(data):
         """

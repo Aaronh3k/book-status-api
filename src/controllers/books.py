@@ -131,3 +131,20 @@ def delete_book_permanently(book_id):
   app.logger.info('Book successfully deleted')
   return responsify(result, {}, 200)
 
+@app.route(BASE_PATH + "/books/isbn/<isbn>", methods=["GET"])
+def get_book_by_isbn(isbn):
+    """
+    Get a book's information by ISBN
+
+    :param isbn: [str] Book's ISBN
+    """
+    app.logger.info(f'Book information request received for ISBN: {isbn}')
+
+    book = Book.get_book_by_isbn(isbn)
+
+    if not book:
+        app.logger.error(f'Book not found for ISBN: {isbn}')
+        return errorit("No such book found", "BOOK_NOT_FOUND", 404)
+    else:
+        app.logger.info(f'Book information retrieved for ISBN: {isbn}')
+        return responsify(book, {})

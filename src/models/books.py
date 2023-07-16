@@ -9,15 +9,15 @@ class Book(BaseMixin, db.Model):
     __tablename__ = "books"
 
     book_id = db.Column(db.String(50), primary_key=True, default=lambda: uuid.uuid1().hex)
-    ISBN = db.Column(db.String(20), nullable=False)
+    ISBN = db.Column(db.String(20), nullable=False, unique=True, index=True)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
-    
+
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime)
 
     _validations_ = {
-        "ISBN": {"type": "string", "required": True, "min_length": 10, "max_length": 13},
+        "ISBN": {"type": "string", "required": True, "min_length": 13, "max_length": 13},
         "title": {"type": "string", "required": True, "min_length": 1, "max_length": 100},
         "author": {"type": "string", "required": True, "min_length": 1, "max_length": 100},
     }
@@ -186,4 +186,30 @@ class Book(BaseMixin, db.Model):
         else:
             app.logger.warning(f'Book with id {book_id} not found')
             return {}
+    
+    @staticmethod
+    def get_book_by_isbn(isbn):
+        """
+        Get a book's info by ISBN
 
+        :param isbn: [str] Book's ISBN
+
+        :return [dict]
+        """
+
+        app.logger.info('Book retrieval request received by ISBN')
+        app.logger.debug(f'Request parameters - ISBN: {isbn}')
+
+        try:
+            result = db.session.query(Book).filter(
+                Book.ISBN == isbn
+            ).all()
+
+            if result:
+                app.logger.info(f'Retrieved book with ISBN {isbn}')
+                return result[0].to_dict()
+
+        except Exception as e:
+            app.logger.error('Book retrieval failed')
+            app.logger.debug(f'Error details: {e}, ISBN: {isbn}')
+            return {"error" : "No book found"}

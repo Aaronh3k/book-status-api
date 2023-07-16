@@ -9,7 +9,7 @@ class ReadingList(BaseMixin, db.Model):
     __tablename__ = "reading_lists"
 
     list_id = db.Column(db.String(50), primary_key=True, default=lambda: uuid.uuid1().hex)
-    book_id = db.Column(db.String(50), db.ForeignKey("books.book_id"), nullable=False)
+    book_id = db.Column(db.String(50), db.ForeignKey("books.book_id"), nullable=False, unique=True)
     # enum  for status = unread, in_progress, finished
     status  = db.Column(db.String(20),  default="unread", nullable=False)
 
@@ -25,7 +25,7 @@ class ReadingList(BaseMixin, db.Model):
     _restrict_in_update_    = ["list_id", "book_id", "created_at", "updated_at"]
 
     book = db.relationship("Book", backref=db.backref("reading_lists", cascade="all, delete-orphan"))
-    
+
     
     @staticmethod
     def create_a_reading_list(data):
