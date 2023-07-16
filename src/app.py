@@ -7,6 +7,7 @@ import logging
 from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask("book_status_api", static_url_path='/static')
+
 # Load config to app
 app.config.from_pyfile("src/config/config.py")
 app.config['SQLALCHEMY_DATABASE_URI'] = config.DB_URI
