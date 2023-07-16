@@ -52,7 +52,7 @@ def err_dict(msg, code, info="", debug_info=None, **kwargs):
 
   :return [String] json
   """  
-  if not isinstance(msg, list): # convert message to an array, if it is not
+  if not isinstance(msg, list):
     msg = [msg]
 
   dc = {
