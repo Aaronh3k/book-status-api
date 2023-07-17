@@ -151,7 +151,7 @@ def get_book_by_isbn(isbn):
         app.logger.info(f'Book information retrieved for ISBN: {isbn}')
         return responsify(book, {})
 
-@app.route(BASE_PATH + 'books/upload', methods=['POST'])
+@app.route(BASE_PATH + '/books/upload', methods=['POST'])
 def upload_books():
     """
     Upload books using Google Books API
