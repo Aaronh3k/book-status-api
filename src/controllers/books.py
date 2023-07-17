@@ -2,6 +2,8 @@ from flask import Blueprint, request
 from src.models.books import Book
 from src.helpers import *
 from src.app import app
+import boto3
+import json
 
 @app.route(BASE_PATH + "/books", methods=["POST"])
 def create_a_book():
@@ -148,3 +150,24 @@ def get_book_by_isbn(isbn):
     else:
         app.logger.info(f'Book information retrieved for ISBN: {isbn}')
         return responsify(book, {})
+
+@app.route(BASE_PATH + 'books/upload', methods=['POST'])
+def upload_books():
+    """
+    Upload books using Google Books API
+
+    :param number_of_books: [int] Number of books to be uploaded
+    """
+    app.logger.info(f'Book upload request received. Request to upload {request.json.get("number_of_books")} books.')
+    
+    # Create SQS client
+    sqs = boto3.client('sqs', region_name='us-east-1')
+    number_of_books = request.json.get('number_of_books')
+
+    # Send message to SQS queue
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps({'number_of_books': number_of_books}))
+
+    # Log information about the sent message
+    app.logger.info(f'Message sent to SQS. Request to upload {number_of_books} books.')
+
+    return responsify({"message": "Book upload request received"}, {}, 202)

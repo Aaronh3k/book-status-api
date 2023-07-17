@@ -15,6 +15,8 @@ else:
     RDS_DB_NAME   = os.getenv("RDS_DB_NAME")  or "books_status"
     RDS_USERNAME  = os.getenv("RDS_USERNAME") or "postgres"
     RDS_PASSWORD  = os.getenv("RDS_PASSWORD") or "newpassword"
+    
+    SQS_QUEUE_URL = os.getenv("SQS_QUEUE_URL") or ""
 
     DB_URI = "postgresql://{}:{}@{}:{}/{}".format(RDS_USERNAME, RDS_PASSWORD, RDS_HOSTNAME, RDS_PORT, RDS_DB_NAME)
 
