@@ -163,9 +163,10 @@ def upload_books():
     # Create SQS client
     sqs = boto3.client('sqs', region_name='us-east-1')
     number_of_books = request.json.get('number_of_books')
+    keyword = request.json.get('keyword')
 
     # Send message to SQS queue
-    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps({'number_of_books': number_of_books}))
+    sqs.send_message(QueueUrl=SQS_QUEUE_URL, MessageBody=json.dumps({'number_of_books': number_of_books, 'keyword': keyword}))
 
     # Log information about the sent message
     app.logger.info(f'Message sent to SQS. Request to upload {number_of_books} books.')
