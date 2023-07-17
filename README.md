@@ -90,6 +90,9 @@ This API is a comprehensive tool designed for effective book management, with di
 
 In terms of data management, the book data is maintained in a `books` table, with attributes including a unique identifier, ISBN, title, author, creation date, and last updated date. The `Book` model incorporates the necessary methods to interact with this database, reinforcing the API's robustness and user-friendliness.
 
+## Database Schema
+
+![Screenshot from 2023-07-17 14-32-43](https://github.com/Aaronh3k/book-status-api/assets/24919671/85666ab7-9eb4-4d19-9327-ee6aa25c8463)
 
 # Deployment Process
 
@@ -118,6 +121,8 @@ When the application is set in a 'test' environment, an SQLite in-memory databas
 A 'fixture' in pytest is a setup function, which allows test methods to use a specific database and application context. Each test runs in its own isolated environment, meaning changes in one test won't affect others. Before each test is run, a new instance of the application with a new database is created, and at the end of each test, this instance is torn down to ensure no state is shared between tests.
 
 Test cases have been written to cover all major functionalities of the API. In each test case, operations like creation, retrieval, update, and deletion are performed. At the end of each test, any changes made are reverted, ensuring the database returns to its initial state. This approach ensures that every part of the application is thoroughly tested, and that it behaves as expected under various conditions.
+
+![Screenshot from 2023-07-17 14-32-01](https://github.com/Aaronh3k/book-status-api/assets/24919671/90ebeeb6-d2ee-4ab1-a9de-5cb1fdde1471)
 
 # Continuous Integration/Continuous Deployment (CI/CD)
 
