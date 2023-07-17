@@ -107,3 +107,34 @@ The deployment of this API is facilitated through a robust AWS architecture, lev
 
 An architectural diagram of the deployment is included in the repository to provide a visual understanding of how these services work together to provide a reliable and efficient service.
 
+# API Testing
+
+The testing for this API is performed using the `pytest` framework. 
+
+When the application is set in a 'test' environment, an SQLite in-memory database is leveraged to perform tests isolated from the production environment.
+
+A 'fixture' in pytest is a setup function, which allows test methods to use a specific database and application context. Each test runs in its own isolated environment, meaning changes in one test won't affect others. Before each test is run, a new instance of the application with a new database is created, and at the end of each test, this instance is torn down to ensure no state is shared between tests.
+
+Test cases have been written to cover all major functionalities of the API. In each test case, operations like creation, retrieval, update, and deletion are performed. At the end of each test, any changes made are reverted, ensuring the database returns to its initial state. This approach ensures that every part of the application is thoroughly tested, and that it behaves as expected under various conditions.
+
+# Continuous Integration/Continuous Deployment (CI/CD)
+
+The API adopts a CI/CD pipeline through GitHub Actions to automate the testing, building, and deployment process. The workflow, named "Book Service CI/CD", is triggered every time there is a push to the `master` branch.
+
+The pipeline is designed to run on an `ubuntu-latest` environment and performs a series of actions:
+
+1. **Code Checkout:** The repository is checked out using `actions/checkout@v2`.
+
+2. **Python Setup:** Python 3.9 is set up using `actions/setup-python@v2`.
+
+3. **Dependency Installation:** All required dependencies are installed with pip.
+
+4. **Test Execution:** The `APP_ENVIRONMENT` is set to `test` and all unit tests are executed with pytest.
+
+5. **Deployment Package Creation:** Upon successful execution of the tests, a deployment package is created excluding any `.git`, `__pycache__`, and `tests` files/directories.
+
+6. **Deployment to Elastic Beanstalk:** The deployment package is then deployed to AWS Elastic Beanstalk using `einaregilsson/beanstalk-deploy@v14`. This action is performed with the AWS access key and secret key stored as GitHub Secrets to ensure secure access.
+
+This CI/CD workflow allows for reliable, efficient, and secure software delivery by automating the entire process of integration, testing, and deployment.
+
+
