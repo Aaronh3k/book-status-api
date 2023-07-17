@@ -106,7 +106,7 @@ def update_a_reading_list(list_id):
         return {"error": result.get("error"), "status": 400}, 400
     else:
         app.logger.info(f'Reading list successfully updated for list_id: {list_id}')
-        return result, 200
+        return responsify(result, {}, 200)
 
 @app.route(BASE_PATH + "/reading_lists/<list_id>", methods=["DELETE"])
 def delete_reading_list_permanently(list_id):

@@ -108,7 +108,7 @@ def update_a_book(book_id):
         return {"error": result.get("error"), "status": 400}, 400
     else:
         app.logger.info(f'Book successfully updated for id: {book_id}')
-        return result, 200
+        return responsify(result, {}, 200)
     
 @app.route(BASE_PATH + "/books/<book_id>", methods=["DELETE"])
 def delete_book_permanently(book_id):

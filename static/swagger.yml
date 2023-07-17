@@ -44,7 +44,7 @@ paths:
                 $ref: "#/components/schemas/Error"
         404:
           description: No books found
-          content: {}
+          content: []
     post:
       tags:
         - Books
@@ -69,6 +69,59 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /books/isbn/{isbn}:
+    get:
+      tags:
+        - Books
+      summary: Get a book's information by ISBN
+      operationId: getBookByIsbn
+      parameters:
+        - name: isbn
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        404:
+          description: No books found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorBook"
+  /books/upload:
+    post:
+      tags:
+        - Books
+      summary: Upload books using Google Books API
+      operationId: uploadBooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number_of_books:
+                  type: integer
+                keyword:
+                  type: string
+        required: true
+      responses:
+        202:
+          description: Book upload request received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
   /books/{book_id}:
     get:
       tags:
@@ -89,11 +142,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/Book"
         404:
-          description: No such book found
+          description: No books found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/NotFoundErrorBook"
     patch:
       tags:
         - Books
@@ -125,11 +178,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         404:
-          description: No such book found
+          description: No books found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/NotFoundErrorBook"
     delete:
       tags:
         - Books
@@ -155,11 +208,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
         404:
-          description: No such book found
+          description: No books found
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/NotFoundErrorBook"
 
   /reading_lists:
     get:
@@ -202,6 +255,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        404:
+          description: No reading lists found
+          content: []
     post:
       tags:
         - Reading Lists
@@ -245,12 +301,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ReadingList"
-        404:
-          description: No such reading list found
+        400:
+          description: Bad request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+        404:
+          description: No reading list found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorReadingList"
     patch:
       tags:
         - Reading Lists
@@ -286,7 +348,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/NotFoundErrorReadingList"
     delete:
       tags:
         - Reading Lists
@@ -316,7 +378,169 @@ paths:
           content:
             application/json:
               schema:
+                $ref: "#/components/schemas/NotFoundErrorReadingList"
+
+  /ratings:
+    get:
+      tags:
+        - Ratings
+      summary: Get all ratings
+      operationId: getRatings
+      parameters:
+        - name: page_number
+          in: query
+          schema:
+            type: integer
+        - name: page_offset
+          in: query
+          schema:
+            type: integer
+        - name: orderby
+          in: query
+          schema:
+            type: integer
+        - name: sortby
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllRatings"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
                 $ref: "#/components/schemas/Error"
+        404:
+          description: No ratings found
+          content: []
+    post:
+      tags:
+        - Ratings
+      summary: Create a new rating
+      operationId: createRating
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRating"
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RatingId"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /ratings/{rating_id}:
+    get:
+      tags:
+        - Ratings
+      summary: Get a rating
+      operationId: getRating
+      parameters:
+        - name: rating_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rating"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No such rating found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorRating"
+    patch:
+      tags:
+        - Ratings
+      summary: Update a rating
+      operationId: updateRating
+      parameters:
+        - name: rating_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRating"
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RatingId"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No such rating found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorRating"
+    delete:
+      tags:
+        - Ratings
+      summary: Delete a rating permanently
+      operationId: deleteRating
+      parameters:
+        - name: rating_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RatingId"
+        400:
+          description: Rating deletion failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: No such rating found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundErrorRating"
 
 components:
   schemas:
@@ -365,8 +589,9 @@ components:
     BookId:
       type: object
       properties:
-        book_id:
+        message:
           type: string
+          example: "successfully updated book_id=<book_id>"
     Error:
       type: object
       properties:
@@ -378,6 +603,12 @@ components:
           type: string
         service:
           type: string
+    NotFoundErrorBook:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "No such book found"
 
     ReadingLists:
       type: object
@@ -434,3 +665,65 @@ components:
       properties:
         list_id:
           type: string
+    NotFoundErrorReadingList:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "No such reading list found"
+
+    AllRatings:
+      type: object
+      properties:
+        ratings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Rating"
+    Rating:
+      type: object
+      properties:
+        rating_id:
+          type: string
+        book_id:
+          type: string
+        list_id:
+          type: string
+        rating:
+          type: integer
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    CreateRating:
+      type: object
+      properties:
+        book_id:
+          type: string
+        list_id:
+          type: string
+        rating:
+          type: integer
+        notes:
+          type: string
+    UpdateRating:
+      type: object
+      properties:
+        rating:
+          type: integer
+        notes:
+          type: string
+    RatingId:
+      type: object
+      properties:
+        rating_id:
+          type: string
+    NotFoundErrorRating:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "No such ratings found"

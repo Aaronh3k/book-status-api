@@ -105,7 +105,7 @@ def update_a_rating(rating_id):
         return {"error": result.get("error"), "status": 400}, 400
     else:
         app.logger.info(f'Rating successfully updated for id: {rating_id}')
-        return result, 200
+        return responsify(result, {}, 200)
 
 @app.route(BASE_PATH + "/ratings/<rating_id>", methods=["DELETE"])
 def delete_rating_permanently(rating_id):
