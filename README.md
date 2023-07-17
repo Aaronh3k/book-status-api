@@ -90,3 +90,20 @@ This API is a comprehensive tool designed for effective book management, with di
 
 In terms of data management, the book data is maintained in a `books` table, with attributes including a unique identifier, ISBN, title, author, creation date, and last updated date. The `Book` model incorporates the necessary methods to interact with this database, reinforcing the API's robustness and user-friendliness.
 
+
+# Deployment Process
+
+The deployment of this API is facilitated through a robust AWS architecture, leveraging several Amazon Web Services' products for a scalable and efficient system. 
+
+- **AWS Elastic Beanstalk:** The core application is hosted and managed using AWS Elastic Beanstalk, which allows for easy and automated deployment of applications on the cloud.
+
+- **AWS SQS:** Amazon Simple Queue Service (SQS) is used as a fully managed message queuing service that enables the decoupling and scaling of microservices, distributed systems, and serverless applications.
+
+- **AWS Lambda:** AWS Lambda is utilized to run the application's code in response to events and automatically manages the computing resources required, ensuring efficient and responsive behavior.
+
+- **Amazon RDS (PostgreSQL):** The API's database is hosted on Amazon RDS, specifically using the PostgreSQL database engine, providing a secure, scalable and managed database environment.
+
+- **Boto3 (Python AWS SDK):** The AWS Software Development Kit (SDK) for Python, Boto3, is used to create, configure, and manage AWS services. It allows for direct interaction and management of AWS services using Python.
+
+An architectural diagram of the deployment is included in the repository to provide a visual understanding of how these services work together to provide a reliable and efficient service.
+
