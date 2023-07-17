@@ -46,7 +46,7 @@ db = SQLAlchemy(app)
 # wires up controller routes
 import src.controllers
 
-@app.route("/", methods=["GET", "OPTIONS"])
+@app.route("/v1/", methods=["GET", "OPTIONS"])
 def root_uri():
     app.logger.info('Root URI accessed')
     return responsify({"message": "Hello World. Welcome to Book Status Service API.", "version": "0.0.1"})
