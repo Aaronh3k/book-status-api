@@ -107,6 +107,8 @@ The deployment of this API is facilitated through a robust AWS architecture, lev
 
 An architectural diagram of the deployment is included in the repository to provide a visual understanding of how these services work together to provide a reliable and efficient service.
 
+![Book-Service-Arch drawio](https://github.com/Aaronh3k/book-status-api/assets/24919671/903e9b5b-9f90-4889-981c-3c128e7a2f82)
+
 # API Testing
 
 The testing for this API is performed using the `pytest` framework. 
