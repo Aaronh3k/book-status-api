@@ -77,3 +77,16 @@ pip install -r requirements.txt
 ```bash
 ./run.py
 ```
+
+# API Functionality
+
+This API is a comprehensive tool designed for effective book management, with distinct capabilities spanning across book creation, information retrieval, updates, deletion, and uploads. It supports a range of operations:
+
+- **Book Management:** It offers the ability to create a new book record through a POST request, inclusive of all necessary book data. Book information can be retrieved in various ways, such as fetching details of a specific book using its ID, multiple books, or even utilizing a book's ISBN. Update operations are facilitated using the book's ID in a PATCH request with the required changes, while book deletion is achieved using the book's ID. A unique feature of this API is the capacity to upload books via the Google Books API, using a specified number of books and a keyword.
+
+- **Reading List Management:** Another core feature of this API is the effective management of reading lists. Users can create a new reading list with a book_id and a reading status, fetch details of a single or multiple reading lists, and update or delete a reading list. The API ensures robust validation and sanitization of user inputs, has a strong error handling framework, and provides user-friendly error messages.
+
+- **Rating Management:** The API is also equipped with functionalities for managing book ratings. It allows users to create new book ratings, fetch details of a specific or multiple book ratings, update a book rating, and delete a book rating. This suite of operations supports a high level of user interaction and feedback, enhancing the overall user experience.
+
+In terms of data management, the book data is maintained in a `books` table, with attributes including a unique identifier, ISBN, title, author, creation date, and last updated date. The `Book` model incorporates the necessary methods to interact with this database, reinforcing the API's robustness and user-friendliness.
+
