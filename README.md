@@ -39,3 +39,33 @@ Take a peek at the tree structure below to understand the project organization:
 ├── static
 │   └── swagger.yml
 └── tests
+
+## Getting Started
+
+Here's a quick guide on how to get the Book-Service-REST-API up and running on your local machine for development and testing purposes.
+
+### Prerequisites
+
+The following tools are required to setup and run this project:
+
+- **Python:** The application is built with Python. Make sure you have Python version 3.9.0 or above. You can download it from [here](https://www.python.org/downloads/).
+
+- **Flask:** The application uses Flask as a web framework. It will be installed when setting up the project.
+
+- **Pip:** Pip is a package management system used to install and manage software packages written in Python. Usually, it's installed with Python. If not, you can install it from [here](https://pip.pypa.io/en/stable/installing/).
+
+### Installation
+
+Please follow these steps to install the application and its dependencies:
+
+**Step 1:** Clone this repository to your local machine using:
+
+```bash
+git clone https://github.com/Aaronh3k/Book-Service-REST-API.git
+
+cd Book-Service-REST-API
+
+pip install -r requirements.txt
+
+./run.py
+```
