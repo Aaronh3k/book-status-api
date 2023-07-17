@@ -39,6 +39,7 @@ Take a peek at the tree structure below to understand the project organization:
 ├── static
 │   └── swagger.yml
 └── tests
+```
 
 ## Getting Started
 
@@ -62,10 +63,17 @@ Please follow these steps to install the application and its dependencies:
 
 ```bash
 git clone https://github.com/Aaronh3k/Book-Service-REST-API.git
+```
 
+**Step 2**: Navigate to the project directory:
+```bash
 cd Book-Service-REST-API
-
+```
+**Step 3**: Install the required Python dependencies:
+```bash
 pip install -r requirements.txt
-
+```
+**Step 4**: Run the application:
+```bash
 ./run.py
 ```
