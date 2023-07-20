@@ -7,6 +7,7 @@ At its core, this service provides the following features:
 - **Book Management:** Keep track of all your favorite books with unique identifiers and essential details such as ISBN, title, and author.
 - **Reading List Management:** Create and manage personalized reading lists. Each book in the reading list has a status associated with it (unread, in progress, or finished) allowing you to track your reading journey effectively.
 - **Book Rating:** An interactive feature enabling you to rate books on a scale of 1 to 5 and make notes on them. This feature enriches the reading experience, making it possible to reflect on read books and recommend them to others.
+- **External Book Upload via Google API:** Enables bulk book uploads using the Google Books API based on user-specified keywords and quantities. The process queues requests via SQS, with a Lambda function ensuring database integrity by filtering out duplicates using ISBNs before insertion.
 
 The service is backed by a robust SQL database structure and offers a comprehensive suite of unit tests ensuring the reliability of the service.
 
@@ -87,6 +88,8 @@ This API is a comprehensive tool designed for effective book management, with di
 - **Reading List Management:** Another core feature of this API is the effective management of reading lists. Users can create a new reading list with a book_id and a reading status, fetch details of a single or multiple reading lists, and update or delete a reading list. The API ensures robust validation and sanitization of user inputs, has a strong error handling framework, and provides user-friendly error messages.
 
 - **Rating Management:** The API is also equipped with functionalities for managing book ratings. It allows users to create new book ratings, fetch details of a specific or multiple book ratings, update a book rating, and delete a book rating. This suite of operations supports a high level of user interaction and feedback, enhancing the overall user experience.
+
+- **External Book Upload:** Users can seamlessly populate their collection by sourcing data from the Google Books API using a keyword and desired quantity. Upon initiating a POST request, the service queues this task via Amazon's Simple Queue Service (SQS), enabling scalable, asynchronous data processing. An AWS Lambda function then retrieves the specified books, verifies against existing ISBNs to prevent duplicates, and inserts new records into the database. 
 
 In terms of data management, the book data is maintained in a `books` table, with attributes including a unique identifier, ISBN, title, author, creation date, and last updated date. The `Book` model incorporates the necessary methods to interact with this database, reinforcing the API's robustness and user-friendliness.
 
