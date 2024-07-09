@@ -14,7 +14,7 @@ greenlet==2.0.2
 importlib-metadata==6.8.0
 iniconfig==2.0.0
 itsdangerous==2.1.2
-Jinja2==3.1.2
+Jinja2==3.1.4
 jmespath==1.0.1
 Mako==1.2.4
 MarkupSafe==2.1.3
